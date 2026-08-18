@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="2048">
+    <rect width="512" height="512" rx="96" fill="#cdbfa8"/>
+    <g font-family="Avenir Next, Segoe UI, system-ui, sans-serif" font-size="112" font-weight="800" text-anchor="middle">
+        <rect x="76" y="76" width="168" height="168" rx="24" fill="#ece2ce"/>
+        <text x="160" y="198" fill="#4b4436">2</text>
+        <rect x="268" y="76" width="168" height="168" rx="24" fill="#efb26c"/>
+        <text x="352" y="198" fill="#fffaf2">0</text>
+        <rect x="76" y="268" width="168" height="168" rx="24" fill="#e4714a"/>
+        <text x="160" y="390" fill="#fffaf2">4</text>
+        <rect x="268" y="268" width="168" height="168" rx="24" fill="#4a55ad"/>
+        <text x="352" y="390" fill="#fffaf2">8</text>
+    </g>
+</svg>

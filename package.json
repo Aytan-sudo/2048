@@ -1,0 +1,11 @@
+{
+    "name": "2048",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Le 2048, avec l'annulation qui lui manquait et des grilles de 3x3 a 6x6.",
+    "type": "module",
+    "scripts": {
+        "test": "node tests/test-moteur.mjs && node tests/test-partie.mjs && node tests/test-storage.mjs && node tests/test-page.mjs",
+        "serve": "python3 -m http.server 8765"
+    }
+}

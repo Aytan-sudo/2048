@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>2048</title>
+<meta name="description" content="Le 2048, avec l'annulation qui lui manquait. Grilles de 3×3 à 6×6, jouable au doigt comme au clavier, hors ligne.">
+<meta name="theme-color" content="#f7f2e8" id="couleur-barre">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="stylesheet" href="css/style.css">
+<script>
+    // Pose le theme avant le premier rendu. Charge par le module app.js, il
+    // arriverait apres coup et l'ecran clignoterait a chaque ouverture.
+    try {
+        const enregistrees = JSON.parse(localStorage.getItem('2048.preferences') || '{}');
+        // Liste blanche : la valeur vient du stockage et atterrit dans un
+        // attribut. « auto » ne pose rien, la feuille de style suit le systeme.
+        if (enregistrees.theme === 'clair' || enregistrees.theme === 'sombre') {
+            document.documentElement.dataset.theme = enregistrees.theme;
+        }
+    } catch { /* stockage indisponible : theme du systeme */ }
+</script>
+</head>
+<body>
+
+<header class="topbar">
+    <button type="button" class="icon-button" id="bouton-aide" aria-label="Règles du jeu">?</button>
+    <h1>2048</h1>
+    <div class="topbar-actions">
+        <button type="button" class="icon-button" id="bouton-theme" aria-label="Changer de thème">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="12" r="8.6"/>
+                <path d="M12 3.4a8.6 8.6 0 0 0 0 17.2Z" class="moitie"/>
+            </svg>
+        </button>
+        <button type="button" class="icon-button" id="bouton-reglages" aria-label="Réglages">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="plein">
+                <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm8.4 3.5c0 .5-.05.98-.13 1.45l2.05 1.6-2 3.46-2.42-.98a8.2 8.2 0 0 1-2.5 1.45L15 21.9H11l-.4-2.92a8.2 8.2 0 0 1-2.5-1.45l-2.42.98-2-3.46 2.05-1.6a8.6 8.6 0 0 1 0-2.9L3.68 8.95l2-3.46 2.42.98a8.2 8.2 0 0 1 2.5-1.45L11 2.1h4l.4 2.92c.9.33 1.74.82 2.5 1.45l2.42-.98 2 3.46-2.05 1.6c.08.47.13.95.13 1.45Z"/>
+            </svg>
+        </button>
+    </div>
+</header>
+
+<div class="hud">
+    <p class="objectif-rappel">Objectif <strong id="valeur-objectif">2048</strong></p>
+    <div class="scores">
+        <div class="score-boite" id="boite-score">
+            <span class="etiquette">Score</span>
+            <strong id="valeur-score">0</strong>
+        </div>
+        <div class="score-boite">
+            <span class="etiquette">Record</span>
+            <strong id="valeur-record">0</strong>
+        </div>
+    </div>
+</div>
+
+<main>
+    <div class="plateau" id="plateau" aria-label="Grille de jeu">
+        <div class="cellules" id="cellules" aria-hidden="true"></div>
+        <div class="tuiles" id="tuiles"></div>
+    </div>
+    <p class="annonce" id="annonce" role="status" aria-live="polite"></p>
+</main>
+
+<footer class="barre-outils">
+    <button type="button" class="button" id="bouton-annuler">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M4 9h10.5a5.5 5.5 0 1 1 0 11H8M4 9l4.5-4.5M4 9l4.5 4.5"/>
+        </svg>
+        Annuler <span class="pastille" id="annulations-restantes">3</span>
+    </button>
+    <button type="button" class="button button-primary" id="bouton-rejouer">Nouvelle partie</button>
+</footer>
+
+<dialog id="dialogue-fin" class="dialog">
+    <h2 id="fin-titre"></h2>
+    <p id="fin-detail" class="fin-detail"></p>
+    <p id="fin-record" class="fin-record" hidden></p>
+    <div class="dialog-actions">
+        <button type="button" class="button" id="fin-partager">Partager</button>
+        <button type="button" class="button" id="fin-annuler">Annuler le dernier coup</button>
+        <button type="button" class="button" id="fin-continuer">Continuer</button>
+        <button type="button" class="button button-primary" id="fin-rejouer">Rejouer</button>
+    </div>
+</dialog>
+
+<dialog id="dialogue-reglages" class="dialog">
+    <h2>Réglages</h2>
+
+    <h3>Grille</h3>
+    <div class="segments quatre" id="segments-taille" role="group" aria-label="Taille de la grille"></div>
+    <p class="explication">Changer de taille lance une nouvelle partie. Chaque grille garde son propre record.</p>
+
+    <h3>Confort</h3>
+    <label class="option">
+        <input type="checkbox" id="option-continuer">
+        <span>
+            <strong>Ne pas m'arrêter à l'objectif</strong>
+            <small>La partie continue sans annonce quand la tuile visée sort. Pour ceux qui jouent le score.</small>
+        </span>
+    </label>
+    <label class="option">
+        <input type="checkbox" id="option-vibration">
+        <span><strong>Vibration</strong><small>Un retour tactile sur les fusions et la fin de partie.</small></span>
+    </label>
+
+    <h3>Thème</h3>
+    <div class="segments" id="segments-theme" role="group" aria-label="Thème de couleurs"></div>
+
+    <h3>Records</h3>
+    <ul class="records" id="liste-records"></ul>
+
+    <div class="dialog-actions">
+        <button type="button" class="button button-danger" id="effacer-records">Effacer</button>
+        <button type="button" class="button button-primary" data-fermer>Jouer</button>
+    </div>
+</dialog>
+
+<dialog id="dialogue-aide" class="dialog">
+    <h2>Règles</h2>
+    <p>Toutes les tuiles glissent d'un bloc dans la direction choisie. Deux tuiles de même valeur qui se rencontrent n'en font plus qu'une, du double. À chaque coup, une nouvelle tuile apparaît&nbsp;— un 2, ou un 4 une fois sur dix.</p>
+    <p>La partie s'arrête quand plus rien ne peut bouger. L'objectif dépend de la grille&nbsp;: 256 en 3×3, 2048 en 4×4, et ainsi de suite.</p>
+
+    <h3>Jouer</h3>
+    <p>Glissez le doigt sur la grille, ou utilisez les flèches. <kbd>ZQSD</kbd>, <kbd>WASD</kbd> et <kbd>HJKL</kbd> fonctionnent aussi.</p>
+
+    <h3>Annuler</h3>
+    <p>Trois annulations par partie, y compris sur le coup qui vous a fait perdre. <kbd>U</kbd> ou <kbd>Ctrl</kbd>+<kbd>Z</kbd> au clavier.</p>
+    <p>Elles reposent aussi le hasard&nbsp;: rejouer le même coup fait réapparaître exactement la même tuile au même endroit. Annuler sert à corriger une erreur, pas à relancer les dés.</p>
+
+    <h3>Ce qui aide</h3>
+    <p>Gardez votre plus grosse tuile dans un coin et n'en bougez plus&nbsp;: le reste s'organise autour. Le coup qui casse une partie est presque toujours celui qui la déplace.</p>
+
+    <h3>Raccourcis</h3>
+    <p><kbd>R</kbd> nouvelle partie · <kbd>T</kbd> thème · <kbd>U</kbd> annuler</p>
+
+    <div class="dialog-actions">
+        <button type="button" class="button button-primary" data-fermer>Jouer</button>
+    </div>
+</dialog>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
