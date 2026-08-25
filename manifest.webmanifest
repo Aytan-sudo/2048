@@ -1,7 +1,7 @@
 {
     "name": "2048",
     "short_name": "2048",
-    "description": "Le 2048, avec l'annulation qui lui manquait : trois retours en arrière par partie, et des grilles de 3×3 à 6×6 qui ont chacune leur objectif.",
+    "description": "Le 2048, avec l'annulation qui lui manquait : trois retours en arrière par partie, même après la défaite. Des grilles de 3×3 à 6×6, et une grille du jour, la même pour tout le monde.",
     "lang": "fr",
     "start_url": "./",
     "scope": "./",
@@ -9,7 +9,10 @@
     "orientation": "portrait",
     "background_color": "#f7f2e8",
     "theme_color": "#f7f2e8",
-    "categories": ["games", "puzzle"],
+    "categories": [
+        "games",
+        "puzzle"
+    ],
     "icons": [
         {
             "src": "assets/icon-192.png",

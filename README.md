@@ -10,6 +10,11 @@ un quart d'heure de construction patiente, sans recours.
 
 **Jouer : https://aytan-sudo.github.io/2048/**
 
+## Version 1.1.4
+
+Le manifeste, la page et la carte du hub parlaient encore d'un jeu sans grille
+du jour. Descriptions mises à jour, et tag « quotidien » sur le hub.
+
 ## Version 1.1.3
 
 **Toute l'échelle du son monte d'une octave.** Elle partait de 165 Hz parce

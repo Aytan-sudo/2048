@@ -1,8 +1,8 @@
 {
     "name": "2048",
-    "version": "1.1.3",
+    "version": "1.1.4",
     "private": true,
-    "description": "Le 2048, avec l'annulation qui lui manquait et des grilles de 3x3 a 6x6.",
+    "description": "Le 2048, avec l'annulation qui lui manquait, une grille du jour et des grilles de 3x3 a 6x6.",
     "type": "module",
     "scripts": {
         "test": "node tests/test-moteur.mjs && node tests/test-partie.mjs && node tests/test-defi.mjs && node tests/test-son.mjs && node tests/test-storage.mjs && node tests/test-page.mjs",
