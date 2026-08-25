@@ -10,6 +10,24 @@ un quart d'heure de construction patiente, sans recours.
 
 **Jouer : https://aytan-sudo.github.io/2048/**
 
+## Version 1.1.3
+
+**Toute l'échelle du son monte d'une octave.** Elle partait de 165 Hz parce
+qu'« un 4 doit sonner grave » ; sur un ordinateur c'était juste, sur un
+téléphone les fusions courantes n'existaient pas. Un haut-parleur de téléphone
+ne restitue à peu près rien sous 300 Hz, et l'oreille y est de surcroît bien
+moins sensible à faible volume : les assemblages de 4, 8, 16 et 32 tombaient
+entre 165 et 247 Hz, donc dans le vide. Seuls le palier et la fin de partie
+s'entendaient — ce qui donnait un jeu presque muet, sans que rien ne signale
+d'erreur. Le jeu se voulant mobile d'abord, c'était un défaut, pas un réglage.
+
+La musique est la même, une octave plus haut : un 4 sonne à 330 Hz, un 2048 à
+1175 Hz. La fin de partie, l'annulation et le coup refusé remontent aussi — ce
+dernier devient un « toc » descendant, sa hauteur ne pouvant plus le distinguer
+d'une fusion. Le volume de la fusion passe de 0,032 à 0,045. Deux tests
+gardent désormais le plancher des 300 Hz, l'un pour l'échelle, l'autre pour les
+timbres à hauteur fixe.
+
 ## Version 1.1.2
 
 Le déblocage du son de la 1.1.1 arrivait un geste trop tard : le contexte audio
@@ -186,7 +204,7 @@ coûte rien, y compris les annulations restantes.
 ## Développer
 
 ```bash
-npm test      # 178 vérifications : moteur, partie, grille du jour, son, stockage, page
+npm test      # 181 vérifications : moteur, partie, grille du jour, son, stockage, page
 npm run check # node --check sur chaque module
 npm run serve # http://localhost:8765
 ```
