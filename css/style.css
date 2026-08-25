@@ -1,135 +1,11 @@
-/* 2048 — feuille de style unique.
-   Trois choses vivent ici et nulle part ailleurs : les couleurs (thème clair,
-   thème sombre, et la rampe des tuiles), la géométrie du plateau, et les
-   animations. Le JavaScript ne pose jamais une couleur ni une taille : il pose
-   une ligne, une colonne et une valeur, le reste se calcule en CSS. */
+/* 2048 — la mise en forme. Les couleurs sont dans `themes.css` et n'existent
+   nulle part ailleurs : ici on ne trouve que des variables. Restent la
+   géométrie du plateau et les animations. Le JavaScript ne pose jamais une
+   couleur ni une taille : il pose une ligne, une colonne et une valeur, le
+   reste se calcule en CSS. */
 
 :root {
-    --bg: #f7f2e8;
-    --panel: #fffdf8;
-    --panel-creux: #f1ead9;
-    --plateau: #cdbfa8;
-    --case: #dccfba;
-    --text: #3d3527;
-    --muted: #7a6f5d;
-    --border: #e2d8c6;
-    --border-vif: #cbbda3;
-    --accent: #c1712c;
-    --accent-fond: #f6e5d0;
-    --accent-texte: #ffffff;
-    --or: #c99516;
-    --rouge: #b8392b;
-    --danger-fond: #fbe4e0;
-    --danger-texte: #8c2418;
-    --danger-bord: #eec7c0;
-    --voile: rgba(61, 53, 39, 0.35);
-    --ombre: 0 18px 40px rgba(61, 53, 39, 0.18);
-    --score-fond: #7a6b58;
-    --score-texte: #fdf7ee;
-
-    /* la rampe des tuiles : sable, puis chaud, puis les tons joyaux */
-    --encre-claire: #4b4436;
-    --encre-vive: #fffaf2;
-    --t2: #ece2ce;      --e2: var(--encre-claire);
-    --t4: #e4d2ad;      --e4: var(--encre-claire);
-    --t8: #efb26c;      --e8: var(--encre-vive);
-    --t16: #ea9052;     --e16: var(--encre-vive);
-    --t32: #e4714a;     --e32: var(--encre-vive);
-    --t64: #d74f47;     --e64: var(--encre-vive);
-    --t128: #cd4074;    --e128: var(--encre-vive);
-    --t256: #a93a92;    --e256: var(--encre-vive);
-    --t512: #7a45a4;    --e512: var(--encre-vive);
-    --t1024: #4a55ad;   --e1024: var(--encre-vive);
-    --t2048: #2f7fae;   --e2048: var(--encre-vive);
-    --t4096: #2f9d8e;   --t8192: #4b9c4a;
-    --tmax: #33302c;    --emax: #f4c95d;
-
     --radius: 14px;
-}
-
-:root[data-theme="sombre"] {
-    --bg: #12151d;
-    --panel: #1a1f2b;
-    --panel-creux: #151a24;
-    --plateau: #222937;
-    --case: #2b3243;
-    --text: #eef2f9;
-    --muted: #98a3b8;
-    --border: #2e3749;
-    --border-vif: #3f4a61;
-    --accent: #e0a44e;
-    --accent-fond: #33281a;
-    --accent-texte: #16130c;
-    --or: #ffc94a;
-    --rouge: #e2584a;
-    --danger-fond: #3a1a17;
-    --danger-texte: #ffd9d3;
-    --danger-bord: #4d2621;
-    --voile: rgba(4, 6, 10, 0.66);
-    --ombre: 0 18px 44px rgba(0, 0, 0, 0.55);
-    --score-fond: #222937;
-    --score-texte: #eef2f9;
-
-    --encre-claire: #e8eef8;
-    --encre-vive: #fdf5ea;
-    --t2: #333c4e;
-    --t4: #414d66;
-    --t8: #a4703e;
-    --t16: #ae5f3a;
-    --t32: #ad4b38;
-    --t64: #a23c3c;
-    --t128: #9b3363;
-    --t256: #81307a;
-    --t512: #573a8b;
-    --t1024: #384590;
-    --t2048: #266889;
-    --t4096: #227f74;
-    --t8192: #3a7f3e;
-    --tmax: #0f131c;    --emax: #ffc94a;
-}
-
-/* Sans choix explicite, la page suit le système. */
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="clair"]) {
-        --bg: #12151d;
-        --panel: #1a1f2b;
-        --panel-creux: #151a24;
-        --plateau: #222937;
-        --case: #2b3243;
-        --text: #eef2f9;
-        --muted: #98a3b8;
-        --border: #2e3749;
-        --border-vif: #3f4a61;
-        --accent: #e0a44e;
-        --accent-fond: #33281a;
-        --accent-texte: #16130c;
-        --or: #ffc94a;
-        --rouge: #e2584a;
-        --danger-fond: #3a1a17;
-        --danger-texte: #ffd9d3;
-        --danger-bord: #4d2621;
-        --voile: rgba(4, 6, 10, 0.66);
-        --ombre: 0 18px 44px rgba(0, 0, 0, 0.55);
-        --score-fond: #222937;
-        --score-texte: #eef2f9;
-
-        --encre-claire: #e8eef8;
-        --encre-vive: #fdf5ea;
-        --t2: #333c4e;
-        --t4: #414d66;
-        --t8: #a4703e;
-        --t16: #ae5f3a;
-        --t32: #ad4b38;
-        --t64: #a23c3c;
-        --t128: #9b3363;
-        --t256: #81307a;
-        --t512: #573a8b;
-        --t1024: #384590;
-        --t2048: #266889;
-        --t4096: #227f74;
-        --t8192: #3a7f3e;
-        --tmax: #0f131c;    --emax: #ffc94a;
-    }
 }
 
 * { box-sizing: border-box; }
@@ -212,6 +88,27 @@ body {
 
 .icon-button:hover { border-color: var(--border-vif); }
 .icon-button:active { transform: translateY(1px); }
+
+/* Le bouton de la grille du jour reste allumé tant qu'on y joue : c'est le
+   seul indice, avec le bandeau, qu'on n'est pas sur une partie libre. */
+.icon-button.actif {
+    border-color: transparent;
+    background: var(--accent);
+    color: var(--accent-texte);
+}
+
+/* Sur la grille du jour, dire laquelle — et dire quand elle ne compte pas. */
+.bandeau-jour {
+    width: min(100%, 30rem);
+    margin: 0;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: var(--accent-fond);
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+}
 
 /* ---- compteurs ---- */
 
@@ -371,7 +268,7 @@ main {
    change avec la grille, la récompense visuelle le suit. */
 .tuile.objectif {
     box-shadow: 0 0 0 max(2px, calc(var(--ecart) * 0.18)) var(--or),
-                0 0 calc(var(--ecart) * 2.4) rgba(201, 149, 22, 0.55);
+                0 0 calc(var(--ecart) * 2.4) var(--or-halo);
 }
 
 .tuile.apparition { animation: apparition 150ms ease-out; z-index: 1; }
@@ -547,6 +444,49 @@ main {
 
 .segment.actif small { color: inherit; opacity: 0.85; }
 
+/* Le choix de palette : une pastille par ambiance, la rondelle peinte de trois
+   tuiles de sa rampe et cerclée de la couleur de son plateau. */
+
+.palettes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.pastille-theme {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    /* 44 px de haut au minimum, comme tous les autres boutons : une pastille
+       ronde de 26 px se rate au doigt. */
+    min-height: 44px;
+    padding: 9px 4px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--panel-creux);
+    color: var(--text);
+    font: 600 0.82rem/1.2 inherit;
+    cursor: pointer;
+}
+
+.pastille-theme .rondelle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--p-plateau);
+    background: linear-gradient(135deg,
+        var(--p1) 0 34%, var(--p2) 0 67%, var(--p3) 0);
+}
+
+.pastille-theme:hover { border-color: var(--border-vif); }
+
+.pastille-theme.actif {
+    border-color: transparent;
+    background: var(--accent);
+    color: var(--accent-texte);
+}
+
 .explication {
     margin: 8px 0 0;
     color: var(--muted);
@@ -564,6 +504,35 @@ main {
 .option input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--accent); }
 .option strong { display: block; font-size: 0.95rem; }
 .option small { display: block; color: var(--muted); font-size: 0.82rem; line-height: 1.4; }
+
+/* Les quatre chiffres de la grille du jour. */
+.chiffres {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: center;
+}
+
+.chiffres li {
+    padding: 8px 2px;
+    border-radius: 10px;
+    background: var(--panel-creux);
+}
+
+.chiffres strong { display: block; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+.chiffres span { color: var(--muted); font-size: 0.68rem; line-height: 1.25; }
+
+/* La version, au bas des Options : elle est lue depuis le code réellement
+   chargé, donc elle dit si la mise à jour est bien arrivée sur l'appareil. */
+.version {
+    margin: 20px 0 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+    text-align: center;
+}
 
 .records {
     margin: 0;

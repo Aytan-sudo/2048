@@ -12,9 +12,10 @@ globalThis.localStorage = {
 };
 
 const {
-    PREFERENCES_PAR_DEFAUT, chargerPreferences, enregistrerPreferences,
+    PREFERENCES_PAR_DEFAUT, SCHEMA_PREFERENCES, chargerPreferences, enregistrerPreferences,
     chargerRecords, recordDe, enregistrerFin, effacerRecords,
-    chargerPartie, enregistrerPartie, oublierPartie
+    chargerPartie, enregistrerPartie, oublierPartie,
+    SCHEMA_DEFI, chargerDefi, enregistrerDefi, retenirResultat, effacerDefi
 } = await import('../js/storage.js');
 
 const { check, report } = counter();
@@ -23,8 +24,18 @@ console.log('\nStockage\n');
 check('sans rien d\'enregistre, les preferences sont celles par defaut',
     chargerPreferences().taille === PREFERENCES_PAR_DEFAUT.taille);
 
-enregistrerPreferences({ ...PREFERENCES_PAR_DEFAUT, taille: 6, theme: 'sombre' });
-check('les preferences se relisent', chargerPreferences().theme === 'sombre');
+enregistrerPreferences({ ...PREFERENCES_PAR_DEFAUT, taille: 6, theme: 'arcade' });
+check('les preferences se relisent', chargerPreferences().theme === 'arcade');
+
+// Migration du palier 1 : le jeu n'avait que deux themes, ils sont devenus des
+// palettes nommees. Un joueur revenu apres la mise a jour doit retrouver la
+// sienne, pas retomber sur le mode systeme.
+enregistrerPreferences({ taille: 4, theme: 'sombre' });
+check('l\'ancien theme sombre devient la palette Nuit', chargerPreferences().theme === 'nuit');
+enregistrerPreferences({ taille: 4, theme: 'clair' });
+check('l\'ancien theme clair devient la palette Sable', chargerPreferences().theme === 'sable');
+check('les preferences migrees portent le schema courant',
+    chargerPreferences().schema === SCHEMA_PREFERENCES);
 
 // Une preference ajoutee dans une version suivante doit prendre sa valeur par
 // defaut, sans effacer ce qui etait deja enregistre.
@@ -69,5 +80,58 @@ enregistrerPartie({ taille: 4, score: 12 });
 check('la partie en cours se relit', chargerPartie().score === 12);
 oublierPartie();
 check('et s\'oublie', chargerPartie() === null);
+
+// ------------------------------------------------------------------- le defi
+
+check('sans rien releve, la serie est a zero',
+    chargerDefi().serie === 0 && Object.keys(chargerDefi().resultats).length === 0);
+
+let defi = retenirResultat(chargerDefi(), '2026-08-25', { score: 3000, tuile: 256, coups: 180 }, 1);
+enregistrerDefi(defi);
+check('le resultat du jour se relit', chargerDefi().resultats['2026-08-25'].score === 3000);
+check('la serie et la meilleure serie suivent',
+    chargerDefi().serie === 1 && chargerDefi().meilleureSerie === 1 && chargerDefi().dernierJour === '2026-08-25');
+
+defi = retenirResultat(chargerDefi(), '2026-08-26', { score: 5000, tuile: 512, coups: 240 }, 2);
+enregistrerDefi(defi);
+check('un second jour allonge la serie', chargerDefi().serie === 2 && chargerDefi().meilleureSerie === 2);
+
+// Une serie cassee ne doit pas emporter le souvenir de la precedente.
+defi = retenirResultat(chargerDefi(), '2026-08-30', { score: 1000, tuile: 128, coups: 90 }, 1);
+enregistrerDefi(defi);
+check('la meilleure serie survit a une serie cassee',
+    chargerDefi().serie === 1 && chargerDefi().meilleureSerie === 2);
+
+// La cle ne doit pas grossir indefiniment : au-dela de trois mois, les plus
+// vieux resultats tombent, les recents restent.
+let ancien = chargerDefi();
+for (let jour = 1; jour <= 120; jour++) {
+    const date = new Date(Date.UTC(2027, 0, jour)).toISOString().slice(0, 10);
+    ancien = retenirResultat(ancien, date, { score: jour, tuile: 8, coups: jour }, 1);
+}
+enregistrerDefi(ancien);
+const gardes = Object.keys(chargerDefi().resultats).sort();
+check('les resultats sont limites a trois mois', gardes.length === 90, String(gardes.length));
+check('ce sont les plus recents qui restent', gardes.at(-1) === '2027-04-30');
+
+// La partie du jour a son propre coin : reprendre une grille du jour ne doit
+// pas ecraser la partie libre en cours.
+enregistrerPartie({ taille: 4, score: 42 });
+enregistrerDefi({ ...chargerDefi(), partie: { taille: 4, score: 900, jour: '2026-08-25' } });
+check('la partie libre et celle du jour cohabitent',
+    chargerPartie().score === 42 && chargerDefi().partie.score === 900);
+
+// Un schema inconnu vaut un stockage vide : mieux vaut perdre une serie que
+// nourrir le jeu avec une forme qu'il ne sait plus lire.
+enregistrerPreferences({});
+memoire.set('2048.defi', JSON.stringify({ schema: SCHEMA_DEFI + 7, serie: 99 }));
+check('un schema inconnu repart de zero', chargerDefi().serie === 0);
+
+memoire.set('2048.defi', '{ ceci n\'est pas du json');
+check('un stockage abime ne bloque pas le jeu', chargerDefi().serie === 0);
+
+effacerDefi();
+check('effacer remet la serie a zero',
+    chargerDefi().serie === 0 && Object.keys(chargerDefi().resultats).length === 0);
 
 report();

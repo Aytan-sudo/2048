@@ -9,27 +9,50 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="stylesheet" href="css/themes.css">
 <link rel="stylesheet" href="css/style.css">
 <script>
-    // Pose le theme avant le premier rendu. Charge par le module app.js, il
+    // Pose la palette avant le premier rendu. Charge par le module app.js, elle
     // arriverait apres coup et l'ecran clignoterait a chaque ouverture.
-    try {
-        const enregistrees = JSON.parse(localStorage.getItem('2048.preferences') || '{}');
-        // Liste blanche : la valeur vient du stockage et atterrit dans un
-        // attribut. « auto » ne pose rien, la feuille de style suit le systeme.
-        if (enregistrees.theme === 'clair' || enregistrees.theme === 'sombre') {
-            document.documentElement.dataset.theme = enregistrees.theme;
+    //
+    // Le mode « Systeme » est resolu ici, pas dans le CSS : l'attribut porte
+    // toujours une palette nommee, ce qui evite d'ecrire deux fois la meme
+    // palette — une fois sous son nom, une fois dans prefers-color-scheme.
+    (() => {
+        const racine = document.documentElement;
+        let choisie = '';
+        try {
+            const prefs = JSON.parse(localStorage.getItem('2048.preferences') || '{}');
+            // Liste blanche : la valeur vient du stockage et atterrit dans un
+            // attribut. Les deux themes d'avant les palettes sont traduits.
+            const ancien = { clair: 'sable', sombre: 'nuit' }[prefs.theme];
+            if (ancien) choisie = ancien;
+            else if (/^(sable|celadon|nuit|cendre|arcade)$/.test(prefs.theme || '')) choisie = prefs.theme;
+        } catch { /* stockage indisponible : la palette du systeme fera l'affaire */ }
+
+        if (!choisie) {
+            const sombre = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches;
+            choisie = sombre ? 'nuit' : 'sable';
         }
-    } catch { /* stockage indisponible : theme du systeme */ }
+        racine.dataset.theme = choisie;
+    })();
 </script>
 </head>
 <body>
 
 <header class="topbar">
-    <button type="button" class="icon-button" id="bouton-aide" aria-label="Règles du jeu">?</button>
+    <div class="topbar-actions">
+        <button type="button" class="icon-button" id="bouton-aide" aria-label="Règles du jeu">?</button>
+        <button type="button" class="icon-button" id="bouton-jour" aria-label="Grille du jour">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="12" r="4.4"/>
+                <path d="M12 2.7v2.4M12 18.9v2.4M2.7 12h2.4M18.9 12h2.4M5.4 5.4l1.7 1.7M16.9 16.9l1.7 1.7M18.6 5.4l-1.7 1.7M7.1 16.9l-1.7 1.7"/>
+            </svg>
+        </button>
+    </div>
     <h1>2048</h1>
     <div class="topbar-actions">
-        <button type="button" class="icon-button" id="bouton-theme" aria-label="Changer de thème">
+        <button type="button" class="icon-button" id="bouton-theme" aria-label="Changer de palette">
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                 <circle cx="12" cy="12" r="8.6"/>
                 <path d="M12 3.4a8.6 8.6 0 0 0 0 17.2Z" class="moitie"/>
@@ -42,6 +65,8 @@
         </button>
     </div>
 </header>
+
+<p class="bandeau-jour" id="bandeau-jour" hidden></p>
 
 <div class="hud">
     <p class="objectif-rappel">Objectif <strong id="valeur-objectif">2048</strong></p>
@@ -88,11 +113,27 @@
 </dialog>
 
 <dialog id="dialogue-reglages" class="dialog">
-    <h2>Réglages</h2>
+    <h2>Options</h2>
 
     <h3>Grille</h3>
     <div class="segments quatre" id="segments-taille" role="group" aria-label="Taille de la grille"></div>
     <p class="explication">Changer de taille lance une nouvelle partie. Chaque grille garde son propre record.</p>
+
+    <h3>Palette</h3>
+    <div class="palettes" id="palettes" role="group" aria-label="Palette de couleurs"></div>
+
+    <h3>Sensations</h3>
+    <label class="option">
+        <input type="checkbox" id="option-sons">
+        <span>
+            <strong>Sons discrets</strong>
+            <small>Une note par fusion, dont la hauteur monte avec la valeur née&nbsp;: un 4 est grave, un 2048 est aigu. Une tuile jamais atteinte dans la partie ajoute une quinte par-dessus.</small>
+        </span>
+    </label>
+    <label class="option">
+        <input type="checkbox" id="option-vibration">
+        <span><strong>Vibration</strong><small>Un retour tactile sur les fusions et la fin de partie.</small></span>
+    </label>
 
     <h3>Confort</h3>
     <label class="option">
@@ -102,19 +143,23 @@
             <small>La partie continue sans annonce quand la tuile visée sort. Pour ceux qui jouent le score.</small>
         </span>
     </label>
-    <label class="option">
-        <input type="checkbox" id="option-vibration">
-        <span><strong>Vibration</strong><small>Un retour tactile sur les fusions et la fin de partie.</small></span>
-    </label>
-
-    <h3>Thème</h3>
-    <div class="segments" id="segments-theme" role="group" aria-label="Thème de couleurs"></div>
 
     <h3>Records</h3>
     <ul class="records" id="liste-records"></ul>
 
+    <h3>Grille du jour</h3>
+    <ul class="chiffres" id="chiffres-defi">
+        <li><strong id="defi-serie">0</strong><span>jours d'affilée</span></li>
+        <li><strong id="defi-record-serie">0</strong><span>meilleure série</span></li>
+        <li><strong id="defi-relevees">0</strong><span>grilles relevées</span></li>
+        <li><strong id="defi-meilleur">—</strong><span>meilleur score</span></li>
+    </ul>
+    <p class="explication">La grille du jour a son propre palmarès&nbsp;: un score obtenu sur une grille imposée ne concourt pas contre un record personnel.</p>
+
+    <p class="version" id="version">2048</p>
+
     <div class="dialog-actions">
-        <button type="button" class="button button-danger" id="effacer-records">Effacer</button>
+        <button type="button" class="button button-danger" id="effacer-records" aria-label="Effacer les records et la série">Effacer</button>
         <button type="button" class="button button-primary" data-fermer>Jouer</button>
     </div>
 </dialog>
@@ -127,6 +172,10 @@
     <h3>Jouer</h3>
     <p>Glissez le doigt sur la grille, ou utilisez les flèches. <kbd>ZQSD</kbd>, <kbd>WASD</kbd> et <kbd>HJKL</kbd> fonctionnent aussi.</p>
 
+    <h3>La grille du jour</h3>
+    <p>Le bouton ☀ de l'en-tête ouvre la grille du jour&nbsp;: un 4×4 dont la suite de tuiles est la même pour tout le monde, tirée de la date. Elle se relève une fois par jour, et les jours d'affilée font une série. Le même bouton ramène ensuite à la partie libre, qui n'a pas bougé.</p>
+    <p>Le lien partagé porte la date, jamais le score&nbsp;: celui qui l'ouvre trouve la grille intacte. Rouvert un autre jour, il redonne la même grille, mais hors série.</p>
+
     <h3>Annuler</h3>
     <p>Trois annulations par partie, y compris sur le coup qui vous a fait perdre. <kbd>U</kbd> ou <kbd>Ctrl</kbd>+<kbd>Z</kbd> au clavier.</p>
     <p>Elles reposent aussi le hasard&nbsp;: rejouer le même coup fait réapparaître exactement la même tuile au même endroit. Annuler sert à corriger une erreur, pas à relancer les dés.</p>
@@ -135,7 +184,8 @@
     <p>Gardez votre plus grosse tuile dans un coin et n'en bougez plus&nbsp;: le reste s'organise autour. Le coup qui casse une partie est presque toujours celui qui la déplace.</p>
 
     <h3>Raccourcis</h3>
-    <p><kbd>R</kbd> nouvelle partie · <kbd>T</kbd> thème · <kbd>U</kbd> annuler</p>
+    <p><kbd>N</kbd> ou <kbd>R</kbd> nouvelle partie · <kbd>T</kbd> palette · <kbd>U</kbd> ou <kbd>Ctrl</kbd>+<kbd>Z</kbd> annuler · <kbd>Échap</kbd> ferme un dialogue</p>
+    <p>La grille du jour n'a pas de raccourci&nbsp;: <kbd>H</kbd> <kbd>J</kbd> <kbd>K</kbd> <kbd>L</kbd> appartiennent au plateau.</p>
 
     <div class="dialog-actions">
         <button type="button" class="button button-primary" data-fermer>Jouer</button>

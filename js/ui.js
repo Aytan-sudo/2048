@@ -3,9 +3,11 @@
 // Tout ce qui lit ou ecrit dans la page passe par ici. app.js orchestre la
 // partie et ne manipule jamais un element a la main.
 
+import { VERSION } from './config.js';
+import { libelleCourt } from './defi.js';
 import { TAILLES, ANNULATIONS, objectifDe } from './partie.js';
 import { recordDe } from './storage.js';
-import { THEMES, themeEffectif } from './themes.js';
+import { THEMES, AUTO, paletteDe, themeEffectif } from './themes.js';
 
 const $ = id => document.getElementById(id);
 
@@ -24,6 +26,8 @@ export const elements = {
     boutonTheme: $('bouton-theme'),
     boutonReglages: $('bouton-reglages'),
     boutonAide: $('bouton-aide'),
+    boutonJour: $('bouton-jour'),
+    bandeauJour: $('bandeau-jour'),
     dialogueFin: $('dialogue-fin'),
     finTitre: $('fin-titre'),
     finDetail: $('fin-detail'),
@@ -34,10 +38,16 @@ export const elements = {
     finContinuer: $('fin-continuer'),
     dialogueReglages: $('dialogue-reglages'),
     segmentsTaille: $('segments-taille'),
-    segmentsTheme: $('segments-theme'),
+    palettes: $('palettes'),
     optionContinuer: $('option-continuer'),
+    optionSons: $('option-sons'),
     optionVibration: $('option-vibration'),
     listeRecords: $('liste-records'),
+    defiSerie: $('defi-serie'),
+    defiRecordSerie: $('defi-record-serie'),
+    defiRelevees: $('defi-relevees'),
+    defiMeilleur: $('defi-meilleur'),
+    version: $('version'),
     effacerRecords: $('effacer-records'),
     dialogueAide: $('dialogue-aide')
 };
@@ -45,8 +55,6 @@ export const elements = {
 // Les scores se lisent par milliers, pas les tuiles : dans un jeu qui
 // s'appelle 2048, ecrire « 2 048 » sur une tuile serait une faute.
 export const nombre = valeur => valeur.toLocaleString('fr-FR');
-
-const LIBELLES_THEME = { auto: 'Système', clair: 'Clair', sombre: 'Sombre' };
 
 // Les segments sont construits en JavaScript : la liste des tailles et celle
 // des themes vivent deja dans les modules, les recopier dans le HTML serait la
@@ -62,13 +70,22 @@ export function construireSegments(surTaille, surTheme) {
         return bouton;
     }));
 
-    elements.segmentsTheme.replaceChildren(...THEMES.map(theme => {
+    // Une pastille par palette, plus le mode systeme en dernier : on choisit
+    // une ambiance en la voyant, pas en lisant son nom.
+    const choix = [...THEMES, { id: AUTO, nom: 'Système' }];
+    elements.palettes.replaceChildren(...choix.map(theme => {
         const bouton = document.createElement('button');
         bouton.type = 'button';
-        bouton.className = 'segment';
-        bouton.dataset.theme = theme;
-        bouton.textContent = LIBELLES_THEME[theme];
-        bouton.addEventListener('click', () => surTheme(theme));
+        bouton.className = 'pastille-theme';
+        bouton.dataset.theme = theme.id;
+        bouton.setAttribute('aria-label', theme.id === AUTO
+            ? 'Suivre la palette du système'
+            : `Palette ${theme.nom}`);
+
+        const rondelle = document.createElement('span');
+        rondelle.className = 'rondelle';
+        bouton.append(rondelle, theme.nom);
+        bouton.addEventListener('click', () => surTheme(theme.id));
         return bouton;
     }));
 }
@@ -81,11 +98,12 @@ const marquer = (groupe, attribut, valeur) => {
 
 export function majReglages(preferences) {
     marquer(elements.segmentsTaille, 'taille', preferences.taille);
-    marquer(elements.segmentsTheme, 'theme', preferences.theme);
+    marquer(elements.palettes, 'theme', preferences.theme);
     elements.optionContinuer.checked = preferences.continuer;
+    elements.optionSons.checked = preferences.sons;
     elements.optionVibration.checked = preferences.vibration;
     elements.boutonTheme.setAttribute('aria-label',
-        themeEffectif(preferences.theme) === 'sombre' ? 'Passer au thème clair' : 'Passer au thème sombre');
+        `Changer de palette, actuellement ${paletteDe(themeEffectif(preferences.theme)).nom}`);
 }
 
 export function majScore(partie, record) {
@@ -105,6 +123,33 @@ export function majAnnulations(partie) {
 
 export function annoncer(texte) {
     elements.annonce.textContent = texte;
+}
+
+// Le bandeau dit sur quelle grille on joue, et le bouton d'en-tete reste
+// allume tant qu'on y est. Une grille du jour rouverte plus tard redonne la
+// meme suite de tuiles, mais ne compte plus pour la serie : autant le dire.
+export function majContexte(contexte) {
+    const surLeJour = Boolean(contexte.jour);
+    elements.bandeauJour.hidden = !surLeJour;
+    if (surLeJour) {
+        elements.bandeauJour.textContent = contexte.compte
+            ? `Grille du jour · ${libelleCourt(contexte.jour)}`
+            : `Grille du ${libelleCourt(contexte.jour)} · hors série`;
+    }
+    elements.boutonJour.classList.toggle('actif', surLeJour && contexte.compte);
+    elements.boutonJour.setAttribute('aria-pressed', String(surLeJour && contexte.compte));
+}
+
+export function majDefi(defi) {
+    const scores = Object.values(defi.resultats).map(resultat => resultat.score);
+    elements.defiSerie.textContent = String(defi.serie || 0);
+    elements.defiRecordSerie.textContent = String(defi.meilleureSerie || 0);
+    elements.defiRelevees.textContent = String(scores.length);
+    elements.defiMeilleur.textContent = scores.length ? nombre(Math.max(...scores)) : '—';
+}
+
+export function majVersion() {
+    elements.version.textContent = `2048 ${VERSION}`;
 }
 
 export function majRecords(records) {

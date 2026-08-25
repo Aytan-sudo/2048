@@ -1,0 +1,271 @@
+/* Les palettes, et rien d'autre : toutes les couleurs du jeu vivent ici. Le
+   reste de la feuille de style ne connaît que ces variables.
+
+   La rampe des tuiles est la langue du jeu — on lit un plateau à la couleur
+   avant de lire les chiffres. Elle survit donc dans chaque palette, avec le
+   même voyage : les deux premières tuiles se confondent presque avec le
+   plateau, puis viennent les tons chauds, puis les tons joyaux, et la tuile
+   hors barème ferme la marche en sombre. Ce qui change d'une palette à
+   l'autre, c'est la matière du plateau et le régime de la rampe : saturée et
+   chaude, rabattue, mate, ou franchement fluorescente.
+
+   Chaque palette doit définir toutes les variables de la première : une seule
+   oubliée ne plante pas, elle laisse une couleur claire au milieu d'un thème
+   sombre. Un test le vérifie.
+
+   `--encre-claire` habille les deux tuiles les plus basses, `--encre-vive` le
+   reste de la rampe. Les deux basculent avec la palette : sur Cendre, dont les
+   tuiles sont pâles, c'est `--encre-vive` qui devient sombre. */
+
+/* Le thème est toujours posé en clair sur <html>, y compris en mode
+   « Système » : le script d'amorce de la page résout la préférence avant le
+   premier rendu. Pas de bloc `prefers-color-scheme` ici, donc pas de palette
+   écrite deux fois. */
+
+:root,
+html[data-theme="sable"] {
+    color-scheme: light;
+
+    --bg: #f7f2e8;              /* parchemin */
+    --panel: #fffdf8;
+    --panel-creux: #f1ead9;
+    --plateau: #cdbfa8;         /* sable mouillé */
+    --case: #dccfba;
+    --text: #3d3527;
+    --muted: #7a6f5d;
+    --border: #e2d8c6;
+    --border-vif: #cbbda3;
+    --accent: #c1712c;
+    --accent-fond: #f6e5d0;
+    --accent-texte: #ffffff;
+    --or: #c99516;              /* le liseré de la tuile visée */
+    --or-halo: rgba(201, 149, 22, 0.55);
+    --danger-fond: #fbe4e0;
+    --danger-texte: #8c2418;
+    --danger-bord: #eec7c0;
+    --voile: rgba(61, 53, 39, 0.35);
+    --ombre: 0 18px 40px rgba(61, 53, 39, 0.18);
+    --score-fond: #7a6b58;
+    --score-texte: #fdf7ee;
+
+    --encre-claire: #4b4436;
+    --encre-vive: #fffaf2;
+    --t2: #ece2ce;
+    --t4: #e4d2ad;
+    --t8: #efb26c;
+    --t16: #ea9052;
+    --t32: #e4714a;
+    --t64: #d74f47;
+    --t128: #cd4074;
+    --t256: #a93a92;
+    --t512: #7a45a4;
+    --t1024: #4a55ad;
+    --t2048: #2f7fae;
+    --t4096: #2f9d8e;
+    --t8192: #4b9c4a;
+    --tmax: #33302c;
+    --emax: #f4c95d;
+}
+
+/* Céladon — porcelaine vert d'eau, plateau gris-vert. Le pendant froid de
+   Sable : même voyage de couleurs, mais posé sur un fond frais, et une rampe
+   d'un cran plus nette pour ne pas se dissoudre dedans. */
+html[data-theme="celadon"] {
+    color-scheme: light;
+
+    --bg: #eef3ef;
+    --panel: #f9fcfa;
+    --panel-creux: #e2ebe5;
+    --plateau: #a9bfb4;
+    --case: #bdd0c5;
+    --text: #22332d;
+    --muted: #5e786e;
+    --border: #d3e0d7;
+    --border-vif: #a9bfb4;
+    --accent: #2f7f6f;
+    --accent-fond: #d7ebe3;
+    --accent-texte: #ffffff;
+    --or: #b8862a;
+    --or-halo: rgba(184, 134, 42, 0.5);
+    --danger-fond: #fae2df;
+    --danger-texte: #8a2b22;
+    --danger-bord: #eec6c0;
+    --voile: rgba(28, 48, 42, 0.34);
+    --ombre: 0 18px 40px rgba(28, 48, 42, 0.18);
+    --score-fond: #4d6a60;
+    --score-texte: #f2f8f4;
+
+    --encre-claire: #1f302a;
+    --encre-vive: #f8fdfa;
+    --t2: #e0eae3;
+    --t4: #c6dacd;
+    --t8: #f0b95f;
+    --t16: #e89a45;
+    --t32: #e07840;
+    --t64: #d4524a;
+    --t128: #c33d79;
+    --t256: #9b3a97;
+    --t512: #6b45ae;
+    --t1024: #3a58b6;
+    --t2048: #1f83b8;
+    --t4096: #16a196;
+    --t8192: #3ba25c;
+    --tmax: #1d2b26;
+    --emax: #ffd873;
+}
+
+/* Nuit — bleu d'encre, tuiles sourdes. La palette d'origine du mode sombre :
+   les couleurs sont rabattues pour qu'une longue partie ne brûle pas les yeux,
+   et la tuile hors barème disparaît presque, liserée d'or. */
+html[data-theme="nuit"] {
+    color-scheme: dark;
+
+    --bg: #12151d;
+    --panel: #1a1f2b;
+    --panel-creux: #151a24;
+    --plateau: #222937;
+    --case: #2b3243;
+    --text: #eef2f9;
+    --muted: #98a3b8;
+    --border: #2e3749;
+    --border-vif: #3f4a61;
+    --accent: #e0a44e;
+    --accent-fond: #33281a;
+    --accent-texte: #16130c;
+    --or: #ffc94a;
+    --or-halo: rgba(255, 201, 74, 0.45);
+    --danger-fond: #3a1a17;
+    --danger-texte: #ffd9d3;
+    --danger-bord: #4d2621;
+    --voile: rgba(4, 6, 10, 0.66);
+    --ombre: 0 18px 44px rgba(0, 0, 0, 0.55);
+    --score-fond: #222937;
+    --score-texte: #eef2f9;
+
+    --encre-claire: #e8eef8;
+    --encre-vive: #fdf5ea;
+    --t2: #333c4e;
+    --t4: #414d66;
+    --t8: #a4703e;
+    --t16: #ae5f3a;
+    --t32: #ad4b38;
+    --t64: #a23c3c;
+    --t128: #9b3363;
+    --t256: #81307a;
+    --t512: #573a8b;
+    --t1024: #384590;
+    --t2048: #266889;
+    --t4096: #227f74;
+    --t8192: #3a7f3e;
+    --tmax: #0f131c;
+    --emax: #ffc94a;
+}
+
+/* Cendre — gris-brun de foyer froid, et une rampe en gouache mate. Le régime
+   s'inverse : les tuiles sont pâles et l'encre sombre. La moins criarde des
+   palettes sombres, celle des parties qui durent. */
+html[data-theme="cendre"] {
+    color-scheme: dark;
+
+    --bg: #191715;
+    --panel: #221f1c;
+    --panel-creux: #141211;
+    --plateau: #2e2a26;
+    --case: #3a352f;
+    --text: #efe9e0;
+    --muted: #a89e91;
+    --border: #3a352f;
+    --border-vif: #4e463d;
+    --accent: #d08a4e;
+    --accent-fond: #322619;
+    --accent-texte: #17120c;
+    --or: #e8b55c;
+    --or-halo: rgba(232, 181, 92, 0.42);
+    --danger-fond: #3a1e19;
+    --danger-texte: #f6d6cd;
+    --danger-bord: #4f2b23;
+    --voile: rgba(10, 8, 7, 0.66);
+    --ombre: 0 18px 44px rgba(0, 0, 0, 0.5);
+    --score-fond: #2e2a26;
+    --score-texte: #efe9e0;
+
+    --encre-claire: #efe9e0;
+    --encre-vive: #1a1613;
+    --t2: #322d28;
+    --t4: #423b33;
+    --t8: #d9a978;
+    --t16: #d29263;
+    --t32: #cc7a5c;
+    --t64: #c26258;
+    --t128: #b85f77;
+    --t256: #a2618f;
+    --t512: #86689e;
+    --t1024: #6a76a2;
+    --t2048: #5c90a0;
+    --t4096: #5d9d92;
+    --t8192: #729d70;
+    --tmax: #0f0d0c;
+    --emax: #e8b55c;
+}
+
+/* Arcade — violet de borne et tuiles fluorescentes, encre sombre par-dessus.
+   Le contraste maximal de la collection : c'est la palette pour jouer dans le
+   noir, et celle où la rampe se lit de l'autre bout de la pièce. */
+html[data-theme="arcade"] {
+    color-scheme: dark;
+
+    --bg: #140f26;
+    --panel: #1e1740;
+    --panel-creux: #171132;
+    --plateau: #2a1f56;
+    --case: #362a68;
+    --text: #f2ecff;
+    --muted: #a99ccb;
+    --border: #3a2d6d;
+    --border-vif: #55449b;
+    --accent: #ff3d8b;
+    --accent-fond: #3a1140;
+    --accent-texte: #170a1f;
+    --or: #ffe14d;
+    --or-halo: rgba(255, 225, 77, 0.5);
+    --danger-fond: #401225;
+    --danger-texte: #ffd4e2;
+    --danger-bord: #5d1a35;
+    --voile: rgba(8, 4, 20, 0.74);
+    --ombre: 0 18px 44px rgba(0, 0, 0, 0.6);
+    --score-fond: #2a1f56;
+    --score-texte: #f2ecff;
+
+    --encre-claire: #f2ecff;
+    --encre-vive: #150c2a;
+    --t2: #2f2560;
+    --t4: #3f3190;
+    --t8: #ffd166;
+    --t16: #ffa64d;
+    --t32: #ff7a5c;
+    --t64: #ff4d6d;
+    --t128: #ff2d9c;
+    --t256: #d94dff;
+    --t512: #9b6bff;
+    --t1024: #5b8cff;
+    --t2048: #2de1ff;
+    --t4096: #35f0c0;
+    --t8192: #7ef05a;
+    --tmax: #090418;
+    --emax: #ffe14d;
+}
+
+/* Les pastilles du dialogue Options. Chacune montre trois tuiles de sa rampe
+   cerclées de la couleur de son plateau : on choisit une palette en la voyant,
+   pas en lisant son nom. Elles portent leurs couleurs en dur — le sélecteur
+   `[data-theme]` d'une palette ne doit surtout pas les attraper, sinon chaque
+   pastille s'habillerait de la palette qu'elle propose. */
+.pastille-theme[data-theme="sable"]   { --p1: #efb26c; --p2: #cd4074; --p3: #4a55ad; --p-plateau: #cdbfa8; }
+.pastille-theme[data-theme="celadon"] { --p1: #f0b95f; --p2: #c33d79; --p3: #1f83b8; --p-plateau: #a9bfb4; }
+.pastille-theme[data-theme="nuit"]    { --p1: #a4703e; --p2: #9b3363; --p3: #384590; --p-plateau: #222937; }
+.pastille-theme[data-theme="cendre"]  { --p1: #d9a978; --p2: #b85f77; --p3: #6a76a2; --p-plateau: #2e2a26; }
+.pastille-theme[data-theme="arcade"]  { --p1: #ffd166; --p2: #ff2d9c; --p3: #2de1ff; --p-plateau: #2a1f56; }
+
+/* Le mode Système : une pastille coupée en deux, le parchemin de Sable d'un
+   côté, l'encre de Nuit de l'autre — les deux palettes qu'il choisit. */
+.pastille-theme[data-theme="auto"]    { --p1: #f7f2e8; --p2: #f7f2e8; --p3: #12151d; --p-plateau: #7a6f5d; }
