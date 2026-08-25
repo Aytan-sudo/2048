@@ -15,7 +15,7 @@ import { graineAleatoire } from './hasard.js';
 import { creerRendu, afficherGain } from './rendu.js';
 import {
     sonFusion, sonPalier, sonObjectif, sonRefus, sonAnnulation, sonFin,
-    surveillerVisibilite
+    preparerSon, surveillerVisibilite
 } from './son.js';
 import { ecouterClavier, ecouterGestes } from './entree.js';
 import { AUTO, appliquerTheme, themeSuivant } from './themes.js';
@@ -378,6 +378,7 @@ function demarrer() {
     else partieLibre(route);
 
     ui.majReglages(preferences);
+    preparerSon(document, () => preferences.sons);
     surveillerVisibilite(document);
 
     if ('serviceWorker' in navigator) {

@@ -84,6 +84,32 @@ export function sonFin() {
     note(196, { duree: 0.34, volume: 0.028, delai: 0.2, forme: 'sine' });
 }
 
+// Le deblocage, et la raison d'etre de cette fonction.
+//
+// iOS ne laisse demarrer l'audio que depuis un evenement d'activation :
+// `pointerup`, `touchend`, un clic, une touche. Or le plateau reconnait le
+// geste des que le seuil est franchi, donc dans `pointermove` — qui n'en est
+// pas un. Le contexte y naitrait suspendu, `resume()` serait refuse, et un
+// joueur qui ne fait que glisser le doigt n'entendrait jamais rien de la
+// partie. Au clavier, sur ordinateur, le defaut est invisible : Chrome accorde
+// l'activation des le `pointerdown`.
+//
+// On prepare donc le contexte au premier geste complet, avant qu'une fusion ne
+// vienne demander une note. `autorise` evite de creer un contexte audio chez
+// qui a coupe le son.
+const ACTIVATIONS = ['pointerup', 'touchend', 'keydown', 'click'];
+
+export function preparerSon(cible, autorise = () => true) {
+    const reveiller = () => {
+        if (!autorise()) return;
+        const moteur = audio();
+        if (moteur && moteur.state !== 'running') moteur.resume?.();
+    };
+    for (const activation of ACTIVATIONS) {
+        cible.addEventListener(activation, reveiller, { capture: true, passive: true });
+    }
+}
+
 export function surveillerVisibilite(document) {
     document.addEventListener('visibilitychange', () => {
         if (!contexte) return;

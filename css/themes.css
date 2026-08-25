@@ -68,8 +68,11 @@ html[data-theme="sable"] {
 }
 
 /* Céladon — porcelaine vert d'eau, plateau gris-vert. Le pendant froid de
-   Sable : même voyage de couleurs, mais posé sur un fond frais, et une rampe
-   d'un cran plus nette pour ne pas se dissoudre dedans. */
+   Sable : même voyage de couleurs, mais des teintes franches là où Sable a des
+   teintes poudrées. Chaque tuile descend d'un cran en clarté et monte d'un cran
+   en pureté — c'est ce qui la distingue de Sable, dont elle reprendrait sinon
+   la rampe presque à l'identique, et c'est ce qui rend l'encre blanche lisible
+   sur les tuiles chaudes. */
 html[data-theme="celadon"] {
     color-scheme: light;
 
@@ -97,19 +100,19 @@ html[data-theme="celadon"] {
 
     --encre-claire: #1f302a;
     --encre-vive: #f8fdfa;
-    --t2: #e0eae3;
-    --t4: #c6dacd;
-    --t8: #f0b95f;
-    --t16: #e89a45;
-    --t32: #e07840;
-    --t64: #d4524a;
-    --t128: #c33d79;
-    --t256: #9b3a97;
-    --t512: #6b45ae;
-    --t1024: #3a58b6;
-    --t2048: #1f83b8;
-    --t4096: #16a196;
-    --t8192: #3ba25c;
+    --t2: #dfeae3;
+    --t4: #bfd6c8;
+    --t8: #d99a3c;
+    --t16: #d47a35;
+    --t32: #cf5b3f;
+    --t64: #c33a46;
+    --t128: #b82a70;
+    --t256: #8e2496;
+    --t512: #5f2fae;
+    --t1024: #2148bd;
+    --t2048: #0079b8;
+    --t4096: #009489;
+    --t8192: #2f9646;
     --tmax: #1d2b26;
     --emax: #ffd873;
 }
@@ -163,7 +166,11 @@ html[data-theme="nuit"] {
 
 /* Cendre — gris-brun de foyer froid, et une rampe en gouache mate. Le régime
    s'inverse : les tuiles sont pâles et l'encre sombre. La moins criarde des
-   palettes sombres, celle des parties qui durent. */
+   palettes sombres, celle des parties qui durent.
+
+   Les deux tuiles basses sont les seules à garder l'encre claire, et elles
+   doivent rester plus claires que `--case` : plus sombres, elles feraient
+   paraître une case pleine plus creuse qu'une case vide. */
 html[data-theme="cendre"] {
     color-scheme: dark;
 
@@ -191,8 +198,8 @@ html[data-theme="cendre"] {
 
     --encre-claire: #efe9e0;
     --encre-vive: #1a1613;
-    --t2: #322d28;
-    --t4: #423b33;
+    --t2: #4a443c;
+    --t4: #5e564b;
     --t8: #d9a978;
     --t16: #d29263;
     --t32: #cc7a5c;
@@ -210,7 +217,10 @@ html[data-theme="cendre"] {
 
 /* Arcade — violet de borne et tuiles fluorescentes, encre sombre par-dessus.
    Le contraste maximal de la collection : c'est la palette pour jouer dans le
-   noir, et celle où la rampe se lit de l'autre bout de la pièce. */
+   noir, et celle où la rampe se lit de l'autre bout de la pièce.
+
+   Comme dans Cendre, les deux tuiles basses restent plus claires que `--case`,
+   sans quoi une case pleine paraîtrait plus creuse qu'une case vide. */
 html[data-theme="arcade"] {
     color-scheme: dark;
 
@@ -238,8 +248,8 @@ html[data-theme="arcade"] {
 
     --encre-claire: #f2ecff;
     --encre-vive: #150c2a;
-    --t2: #2f2560;
-    --t4: #3f3190;
+    --t2: #3b2f7a;
+    --t4: #4d3bab;
     --t8: #ffd166;
     --t16: #ffa64d;
     --t32: #ff7a5c;
@@ -261,10 +271,10 @@ html[data-theme="arcade"] {
    `[data-theme]` d'une palette ne doit surtout pas les attraper, sinon chaque
    pastille s'habillerait de la palette qu'elle propose. */
 .pastille-theme[data-theme="sable"]   { --p1: #efb26c; --p2: #cd4074; --p3: #4a55ad; --p-plateau: #cdbfa8; }
-.pastille-theme[data-theme="celadon"] { --p1: #f0b95f; --p2: #c33d79; --p3: #1f83b8; --p-plateau: #a9bfb4; }
+.pastille-theme[data-theme="celadon"] { --p1: #d99a3c; --p2: #b82a70; --p3: #0079b8; --p-plateau: #a9bfb4; }
 .pastille-theme[data-theme="nuit"]    { --p1: #a4703e; --p2: #9b3363; --p3: #384590; --p-plateau: #222937; }
-.pastille-theme[data-theme="cendre"]  { --p1: #d9a978; --p2: #b85f77; --p3: #6a76a2; --p-plateau: #2e2a26; }
-.pastille-theme[data-theme="arcade"]  { --p1: #ffd166; --p2: #ff2d9c; --p3: #2de1ff; --p-plateau: #2a1f56; }
+.pastille-theme[data-theme="cendre"]  { --p1: #d9a978; --p2: #b85f77; --p3: #6a76a2; --p-plateau: #3a352f; }
+.pastille-theme[data-theme="arcade"]  { --p1: #ffd166; --p2: #ff2d9c; --p3: #2de1ff; --p-plateau: #362a68; }
 
 /* Le mode Système : une pastille coupée en deux, le parchemin de Sable d'un
    côté, l'encre de Nuit de l'autre — les deux palettes qu'il choisit. */

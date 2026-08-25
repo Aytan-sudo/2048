@@ -1,6 +1,6 @@
 // Les constantes que plusieurs modules se partagent, et que les tests relisent.
 
-export const VERSION = '1.1.0';
+export const VERSION = '1.1.1';
 
 export const URL_JEU = 'https://aytan-sudo.github.io/2048/';
 

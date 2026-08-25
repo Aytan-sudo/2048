@@ -10,6 +10,20 @@ un quart d'heure de construction patiente, sans recours.
 
 **Jouer : https://aytan-sudo.github.io/2048/**
 
+## Version 1.1.1
+
+- **le son se débloque enfin sur téléphone.** Le plateau reconnaît le geste dès
+  le seuil franchi, donc dans `pointermove` — que WebKit ne compte pas comme une
+  activation. Le contexte audio y naissait suspendu et n'en repartait jamais :
+  un joueur au doigt n'entendait rien de la partie, alors qu'au clavier tout
+  fonctionnait. Il est désormais préparé au premier geste complet.
+- **Céladon** ne ressemble plus à Sable sur fond vert : sa rampe descend d'un
+  cran en clarté et monte d'un cran en pureté, ce qui la distingue et rend
+  l'encre blanche lisible sur les tuiles chaudes.
+- **Cendre et Arcade** : leurs tuiles 2 et 4 étaient plus sombres que les cases
+  vides, si bien qu'une case pleine paraissait plus creuse qu'une case vide. Un
+  test compare désormais les luminances dans chaque palette.
+
 ## Version 1.1.0
 
 - **grille du jour** : la même suite de tuiles pour tout le monde, retrouvée par
@@ -164,7 +178,7 @@ coûte rien, y compris les annulations restantes.
 ## Développer
 
 ```bash
-npm test      # 177 vérifications : moteur, partie, grille du jour, son, stockage, page
+npm test      # 178 vérifications : moteur, partie, grille du jour, son, stockage, page
 npm run check # node --check sur chaque module
 npm run serve # http://localhost:8765
 ```

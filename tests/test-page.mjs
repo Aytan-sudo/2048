@@ -158,6 +158,30 @@ for (const theme of THEMES) {
 }
 check('chaque palette definit toutes les variables', incompletes.length === 0, incompletes.join(' | '));
 
+// Une case pleine ne doit jamais paraitre plus creuse qu'une case vide. Les
+// deux tuiles basses se confondent presque avec le plateau — c'est voulu — mais
+// du bon cote : plus claires que `--case`, jamais plus sombres. La faute ne
+// leve aucune erreur et ne se voit qu'en jouant, dans la bonne palette.
+const luminance = couleur => {
+    const canaux = [1, 3, 5].map(debut => parseInt(couleur.slice(debut, debut + 2), 16) / 255);
+    const [r, v, b] = canaux.map(x => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * r + 0.7152 * v + 0.0722 * b;
+};
+const couleurDe = (bloc, nom) => new RegExp(`${nom}:\\s*(#[0-9a-fA-F]{6})`).exec(bloc)?.[1];
+
+const creuses = [];
+for (const theme of THEMES) {
+    const bloc = blocDe(`html[data-theme="${theme.id}"]`) ?? '';
+    const vide = couleurDe(bloc, '--case');
+    for (const basse of ['--t2', '--t4']) {
+        const pleine = couleurDe(bloc, basse);
+        if (!vide || !pleine) { creuses.push(`${theme.id} ${basse} (absente)`); continue; }
+        if (luminance(pleine) < luminance(vide)) creuses.push(`${theme.id} ${basse}`);
+    }
+}
+check('les tuiles basses restent plus claires que les cases vides',
+    creuses.length === 0, creuses.join(' '));
+
 check('des palettes claires et des sombres',
     /color-scheme: light/.test(themes) && /color-scheme: dark/.test(themes));
 
