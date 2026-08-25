@@ -94,10 +94,12 @@ export function sonFin() {
 // partie. Au clavier, sur ordinateur, le defaut est invisible : Chrome accorde
 // l'activation des le `pointerdown`.
 //
-// On prepare donc le contexte au premier geste complet, avant qu'une fusion ne
-// vienne demander une note. `autorise` evite de creer un contexte audio chez
-// qui a coupe le son.
-const ACTIVATIONS = ['pointerup', 'touchend', 'keydown', 'click'];
+// On prepare donc le contexte des le poser du doigt — le seul evenement
+// d'activation qui precede le glissement, et donc la premiere fusion. Le lever
+// et le clic sont gardes en filet : sur les iOS anciens, seul `touchend`
+// debloque, et le son arrive alors au geste suivant plutot que jamais.
+// `autorise` evite de creer un contexte audio chez qui a coupe le son.
+const ACTIVATIONS = ['pointerdown', 'touchstart', 'pointerup', 'touchend', 'keydown', 'click'];
 
 export function preparerSon(cible, autorise = () => true) {
     const reveiller = () => {

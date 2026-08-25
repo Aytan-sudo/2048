@@ -10,6 +10,14 @@ un quart d'heure de construction patiente, sans recours.
 
 **Jouer : https://aytan-sudo.github.io/2048/**
 
+## Version 1.1.2
+
+Le déblocage du son de la 1.1.1 arrivait un geste trop tard : le contexte audio
+naissait encore dans le `pointermove` qui déclenche le coup, avant que le lever
+du doigt ait pu le préparer. Il est maintenant préparé dès le **poser** du
+doigt, seul événement d'activation qui précède le glissement. Le lever et le
+clic restent en filet pour les iOS anciens, où seul `touchend` débloque.
+
 ## Version 1.1.1
 
 - **le son se débloque enfin sur téléphone.** Le plateau reconnaît le geste dès
