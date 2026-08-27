@@ -10,6 +10,11 @@ un quart d'heure de construction patiente, sans recours.
 
 **Jouer : https://aytan-sudo.github.io/2048/**
 
+## Version 1.1.5
+
+- les cibles tactiles de l'interface passent à 44 px (boutons d'en-tête,
+  boutons texte, listes déroulantes), conformément à la convention.
+
 ## Version 1.1.4
 
 Le manifeste, la page et la carte du hub parlaient encore d'un jeu sans grille
