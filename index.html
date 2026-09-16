@@ -11,6 +11,9 @@
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="stylesheet" href="css/themes.css">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="commun/passeport.css">
+<script src="commun/passeport.js"></script>
+<script src="commun/liaison.js" defer></script>
 <script>
     // Pose la palette avant le premier rendu. Charge par le module app.js, elle
     // arriverait apres coup et l'ecran clignoterait a chaque ouverture.
@@ -22,7 +25,10 @@
         const racine = document.documentElement;
         let choisie = '';
         try {
-            const prefs = JSON.parse(localStorage.getItem('2048.preferences') || '{}');
+            // Avec un passeport, la palette est celle du joueur ; en mode
+            // invite, celle de l'appareil, comme avant.
+            const magasin = globalThis.Passeport?.stockageJeu('2048') || localStorage;
+            const prefs = JSON.parse(magasin.getItem('2048.preferences') || '{}');
             // Liste blanche : la valeur vient du stockage et atterrit dans un
             // attribut. Les deux themes d'avant les palettes sont traduits.
             const ancien = { clair: 'sable', sombre: 'nuit' }[prefs.theme];
@@ -39,6 +45,9 @@
 </script>
 </head>
 <body>
+
+<div class="passeport-ruban" data-passeport-ruban data-jeu="2048"
+     data-consigne="Tampon : l’objectif atteint ou 100 coups"></div>
 
 <header class="topbar">
     <div class="topbar-actions">

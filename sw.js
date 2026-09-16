@@ -11,7 +11,7 @@
 // worker sert un vieux cache, c'est le vieux numero qui s'affiche dans le jeu —
 // on voit d'un coup d'oeil si la mise a jour est arrivee sur l'appareil.
 
-const VERSION = '2048-1.1.5';
+const VERSION = '2048-1.2.0';
 const COQUILLE = [
     './',
     'index.html',
@@ -29,6 +29,9 @@ const COQUILLE = [
     'js/storage.js',
     'js/themes.js',
     'js/ui.js',
+    'commun/passeport.js',
+    'commun/liaison.js',
+    'commun/passeport.css',
     'manifest.webmanifest',
     'assets/icon.svg',
     'assets/icon-180.png',

@@ -15,7 +15,8 @@ const {
     PREFERENCES_PAR_DEFAUT, SCHEMA_PREFERENCES, chargerPreferences, enregistrerPreferences,
     chargerRecords, recordDe, enregistrerFin, effacerRecords,
     chargerPartie, enregistrerPartie, oublierPartie,
-    SCHEMA_DEFI, chargerDefi, enregistrerDefi, retenirResultat, effacerDefi
+    SCHEMA_DEFI, chargerDefi, enregistrerDefi, retenirResultat, effacerDefi,
+    compterCoupPasseport
 } = await import('../js/storage.js');
 
 const { check, report } = counter();
@@ -133,5 +134,34 @@ check('un stockage abime ne bloque pas le jeu', chargerDefi().serie === 0);
 effacerDefi();
 check('effacer remet la serie a zero',
     chargerDefi().serie === 0 && Object.keys(chargerDefi().resultats).length === 0);
+
+// ------------------------------------------------------- le compteur du jour
+//
+// Il ne vit que dans l'espace d'un joueur. En mode invite il rend `null` et
+// n'ecrit rien : sans passeport, le stockage du jeu doit rester exactement ce
+// qu'il etait avant le raccordement.
+
+check('en mode invite, rien n\'est compte', compterCoupPasseport('2026-09-16') === null);
+check('et rien n\'est ecrit dans le localStorage', !memoire.has('2048.passeport'));
+
+const espace = new Map();
+const profil = {
+    getItem: cle => (espace.has(cle) ? espace.get(cle) : null),
+    setItem: (cle, valeur) => espace.set(cle, String(valeur)),
+    removeItem: cle => espace.delete(cle)
+};
+check('le premier coup du jour compte pour un',
+    compterCoupPasseport('2026-09-16', profil) === 1);
+for (let i = 2; i <= 100; i++) compterCoupPasseport('2026-09-16', profil);
+check('le centieme coup est bien le centieme',
+    JSON.parse(espace.get('2048.passeport')).coups === 100);
+check('le lendemain repart de un', compterCoupPasseport('2026-09-17', profil) === 1);
+
+espace.set('2048.passeport', '{ abime');
+check('un compteur illisible repart de un',
+    compterCoupPasseport('2026-09-17', profil) === 1);
+espace.set('2048.passeport', JSON.stringify({ jour: '2026-09-17', coups: 'beaucoup' }));
+check('un compte qui n\'est pas un entier repart de un',
+    compterCoupPasseport('2026-09-17', profil) === 1);
 
 report();

@@ -10,6 +10,27 @@ un quart d'heure de construction patiente, sans recours.
 
 **Jouer : https://aytan-sudo.github.io/2048/**
 
+## Version 1.2.0 — Le passeport commun
+
+Ouvert depuis le hub avec un passeport, le jeu range préférences, records,
+partie en cours et grille du jour dans l’espace du joueur ; en mode invité, rien
+ne change. Un bandeau rappelle le profil et la consigne du jour.
+
+Le tampon **Nombres** récompense l’effort ou la réussite, au premier des deux :
+l’objectif atteint (2048 en 4×4, 256 en 3×3, 8192 en 6×6) ou la grille du jour
+menée à son terme le donnent tout de suite ; sinon, c’est le centième coup de la
+journée, toutes parties confondues. Un coup refusé — celui qui ne bouge aucune
+tuile — ne compte pas.
+
+Le profil traverse les réécritures d’adresse : recharger la page ne rend plus la
+partie à l’invité. Les liens partagés, eux, ne le portent jamais.
+
+Le budget de hauteur du plateau se compte désormais en `dvh` et non en `vh` :
+sur iOS, `100vh` est la hauteur « grande », celle qui ignore la barre de Safari,
+et le plateau se croyait au large alors qu’il lui manquait plus de cent pixels.
+Sur l’iPhone SE du simulateur, la page défile maintenant moins qu’avant le
+raccordement.
+
 ## Version 1.1.5
 
 - les cibles tactiles de l'interface passent à 44 px (boutons d'en-tête,

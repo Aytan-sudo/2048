@@ -39,6 +39,13 @@ body {
     -webkit-text-size-adjust: 100%;
 }
 
+/* Le bandeau du passeport prend la laize de l'en-tête, et ses 44 px sont
+   retranchés du budget du plateau plus bas : sans cela, la grille passerait
+   sous le pli sur un petit écran. */
+.passeport-ruban {
+    width: min(100%, 30rem);
+}
+
 /* ---- en-tête ---- */
 
 .topbar {
@@ -189,7 +196,9 @@ main {
 .plateau {
     position: relative;
     container-type: inline-size;
-    width: min(100%, 30rem, calc(100vh - 260px));
+    /* 316 px = le reste de la page (260) plus le bandeau du passeport et sa
+       gouttière (44 + 12). */
+    width: min(100%, 30rem, calc(100dvh - 316px));
     aspect-ratio: 1;
     border-radius: var(--radius);
     background: var(--plateau);
@@ -563,5 +572,5 @@ main {
 
 @media (max-height: 620px) {
     .topbar h1 { font-size: 1.6rem; }
-    .plateau { width: min(100%, calc(100vh - 210px)); }
+    .plateau { width: min(100%, calc(100dvh - 266px)); }
 }

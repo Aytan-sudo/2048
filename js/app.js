@@ -27,7 +27,8 @@ import {
     chargerPreferences, enregistrerPreferences,
     chargerRecords, recordDe, enregistrerFin, effacerRecords,
     chargerPartie, enregistrerPartie, oublierPartie,
-    chargerDefi, enregistrerDefi, retenirResultat, effacerDefi
+    chargerDefi, enregistrerDefi, retenirResultat, effacerDefi,
+    compterCoupPasseport
 } from './storage.js';
 import * as ui from './ui.js';
 
@@ -82,6 +83,16 @@ function rafraichir() {
     ui.majAnnulations(partie);
 }
 
+// Le tampon du passeport : l'objectif atteint ou la grille du jour menee a son
+// terme le donnent tout de suite ; sinon, c'est le centieme coup de la journee,
+// toutes parties confondues. En mode invite, rien n'est compte ni ecrit.
+function noterPasseport({ joue = false, reussite = false } = {}) {
+    const joueur = globalThis.Passeport;
+    if (!joueur?.profilId) return;
+    const coups = joue ? compterCoupPasseport(joueur.jourLocal()) : 0;
+    if (coups !== null) joueur.noter('2048', coups, reussite);
+}
+
 // L'adresse suit la grille en cours : elle se copie et se partage telle
 // quelle. Elle ne porte jamais un score, seulement de quoi refabriquer la
 // grille.
@@ -89,8 +100,13 @@ function synchroniserAdresse() {
     const requete = contexte.jour
         ? lienDuJour(contexte.jour, '')
         : lienDeGraine(partie.graine, partie.taille, '');
+    // Le profil du passeport traverse la reecriture : sans lui, un simple
+    // rechargement rendrait la partie a l'invite.
+    const profil = new URL(location.href).searchParams.get('profil');
+    const adresse = new URL(`${location.pathname}${requete}`, location.origin);
+    if (profil !== null) adresse.searchParams.set('profil', profil);
     try {
-        history.replaceState({}, '', `${location.pathname}${requete}`);
+        history.replaceState({}, '', `${adresse.pathname}${adresse.search}`);
     } catch { /* adresse verrouillee : le jeu s'en passe */ }
 }
 
@@ -154,7 +170,11 @@ const basculerJour = () => (contexte.compte ? partieLibre() : grilleDuJour());
 function conclure() {
     if (!partie.enregistree) {
         partie.enregistree = true;
-        afficherFin(contexte.compte ? conclureLeJour() : conclureLibre());
+        const bilan = contexte.compte ? conclureLeJour() : conclureLibre();
+        // La grille du jour menee a son terme vaut le tampon : elle est la meme
+        // pour tout le monde et ne se releve qu'une fois.
+        if (bilan?.jour) noterPasseport({ reussite: true });
+        afficherFin(bilan);
     } else {
         afficherFin(null);
     }
@@ -245,6 +265,9 @@ function coup(direction) {
     if (resultat.fusions.length) vibrer(10);
     rafraichir();
     ranger();
+    // Un coup qui a bouge, et l'objectif s'il vient d'etre atteint : un refus
+    // ne compte pas, c'est le sens du `return` plus haut.
+    noterPasseport({ joue: true, reussite: resultat.objectif });
 
     if (resultat.objectif && !preferences.continuer) {
         setTimeout(afficherVictoire, 260);

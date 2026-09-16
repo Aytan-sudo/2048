@@ -53,7 +53,10 @@ const attendus = [
     'index.html', 'manifest.webmanifest',
     ...readdirSync(join(racine, 'css')).map(nom => `css/${nom}`),
     ...modules.map(nom => `js/${nom}`),
-    ...readdirSync(join(racine, 'assets')).map(nom => `assets/${nom}`)
+    ...readdirSync(join(racine, 'assets')).map(nom => `assets/${nom}`),
+    // Le module du passeport vient du hub : hors ligne il doit etre la, sinon
+    // la page s'ouvre sans bandeau et le joueur perd son espace.
+    ...readdirSync(join(racine, 'commun')).map(nom => `commun/${nom}`)
 ];
 const oublies = attendus.filter(chemin => !coquille.includes(chemin));
 check('tous les fichiers du jeu sont en cache', oublies.length === 0, oublies.join(' '));
@@ -105,9 +108,18 @@ check('la page charge l\'application en module',
 
 // Le script pose-theme est recopie a la main dans le HTML : s'il lit une autre
 // cle que le module de stockage, le theme clignote a chaque ouverture.
+// Avec un passeport, le magasin est celui du joueur ; sans, le localStorage.
+// Les deux chemins doivent viser la meme cle que le module de stockage.
 check('le script d\'amorce lit la meme cle que le stockage',
-    page.includes("localStorage.getItem('2048.preferences')")
+    page.includes("getItem('2048.preferences')")
+    && page.includes("Passeport?.stockageJeu('2048')")
     && lire('js/storage.js').includes("CLE_PREFERENCES = '2048.preferences'"));
+
+// Le bandeau du passeport annonce le jeu au module commun : sans `data-jeu`,
+// il s'affiche mais aucun tampon ne peut etre attribue.
+check('la page porte le bandeau du passeport',
+    page.includes('data-passeport-ruban data-jeu="2048"')
+    && page.includes('commun/passeport.js') && page.includes('commun/liaison.js'));
 
 // Les couleurs des tuiles vivent dans le CSS, indexees par valeur. Une valeur
 // oubliee donnerait une tuile sans couleur au moment le plus memorable.

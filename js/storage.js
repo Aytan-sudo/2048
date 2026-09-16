@@ -8,6 +8,12 @@ const CLE_PREFERENCES = '2048.preferences';
 const CLE_RECORDS = '2048.records';
 const CLE_PARTIE = '2048.partie';
 const CLE_DEFI = '2048.defi';
+const CLE_PASSEPORT = '2048.passeport';
+
+// Ouvert depuis le hub avec un passeport, le jeu range tout dans l'espace du
+// joueur ; en mode invite, dans le localStorage, exactement comme avant.
+const passeport = globalThis.Passeport?.stockageJeu('2048') ?? null;
+const magasin = () => passeport ?? localStorage;
 
 export const SCHEMA_PREFERENCES = 2;
 
@@ -27,7 +33,7 @@ const THEMES_ANCIENS = { clair: 'sable', sombre: 'nuit' };
 
 const lire = (cle, secours) => {
     try {
-        const brut = localStorage.getItem(cle);
+        const brut = magasin().getItem(cle);
         return brut ? { ...secours, ...JSON.parse(brut) } : { ...secours };
     } catch {
         return { ...secours };   // navigation privee, quota plein : on joue quand meme
@@ -36,12 +42,12 @@ const lire = (cle, secours) => {
 
 const ecrire = (cle, valeur) => {
     try {
-        localStorage.setItem(cle, JSON.stringify(valeur));
+        magasin().setItem(cle, JSON.stringify(valeur));
     } catch { /* sans persistance, le jeu reste jouable */ }
 };
 
 const effacer = cle => {
-    try { localStorage.removeItem(cle); } catch { /* rien a nettoyer */ }
+    try { magasin().removeItem(cle); } catch { /* rien a nettoyer */ }
 };
 
 export function chargerPreferences() {
@@ -87,7 +93,7 @@ export function effacerRecords() {
 
 export const chargerPartie = () => {
     try {
-        const brut = localStorage.getItem(CLE_PARTIE);
+        const brut = magasin().getItem(CLE_PARTIE);
         return brut ? JSON.parse(brut) : null;
     } catch {
         return null;
@@ -144,4 +150,19 @@ export function retenirResultat(defi, jour, resultat, serie) {
 
 export function effacerDefi() {
     ecrire(CLE_DEFI, DEFI_VIDE);
+}
+
+// -------------------------------------------------------------- le passeport
+//
+// Les coups du jour, pour le tampon a l'effort. Le compte vit dans l'espace du
+// joueur et nulle part ailleurs : en mode invite, rien n'est compte ni ecrit,
+// exactement comme avant le passeport.
+
+export function compterCoupPasseport(jour, espace = passeport) {
+    if (!espace) return null;
+    let compte = null;
+    try { compte = JSON.parse(espace.getItem(CLE_PASSEPORT)); } catch { /* illisible : on repart de zero */ }
+    const coups = compte?.jour === jour && Number.isInteger(compte.coups) ? compte.coups + 1 : 1;
+    try { espace.setItem(CLE_PASSEPORT, JSON.stringify({ jour, coups })); } catch { /* le passeport signale l'echec */ }
+    return coups;
 }
