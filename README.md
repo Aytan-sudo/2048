@@ -10,6 +10,12 @@ un quart d'heure de construction patiente, sans recours.
 
 **Jouer : https://aytan-sudo.github.io/2048/**
 
+## Version 1.2.2 — Passeport 1.9.0
+
+Module commun du passeport 1.9.0 : deux jeux neufs rejoignent la collection,
+**Le compte est bon** (thème Nombres) et **La Ruche** (thème Mots). Rien ne
+change dans le jeu.
+
 ## Version 1.2.1 — Passeport 1.8.0
 
 Module commun du passeport 1.8.0 : **Maze for Adventurers** rejoint le thème
